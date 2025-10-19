@@ -4,7 +4,18 @@
     <meta charset="UTF-8" />
     <title>Elvin | URL Shortener</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.ico" />
+
     <style>
+      /* Reset box-sizing agar input/button pas dengan container */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -23,7 +34,7 @@
         border-radius: 12px;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         width: 100%;
-        max-width: 450px; /* Desktop lebih besar */
+        max-width: 450px;
         text-align: center;
       }
 
@@ -33,16 +44,20 @@
         color: #38bdf8;
       }
 
-      input {
+      input,
+      button {
         width: 100%;
         padding: 12px;
-        border: none;
         border-radius: 8px;
-        margin-bottom: 15px;
         font-size: 0.95rem;
         outline: none;
+        border: none;
+      }
+
+      input {
         background: #334155;
         color: #f1f5f9;
+        margin-bottom: 15px;
       }
 
       input:focus {
@@ -50,13 +65,8 @@
       }
 
       button {
-        width: 100%;
-        padding: 12px;
         background: #38bdf8;
-        border: none;
-        border-radius: 8px;
         color: #0f172a;
-        font-size: 1rem;
         font-weight: bold;
         cursor: pointer;
         transition: 0.3s;
@@ -74,6 +84,7 @@
         padding: 10px;
         border-radius: 8px;
         word-wrap: break-word;
+        display: none;
       }
 
       .result a {
@@ -82,7 +93,6 @@
         font-weight: 500;
       }
 
-      /* Tambahan jika layar < 400px (HP kecil) */
       @media (max-width: 400px) {
         .container {
           padding: 20px;
@@ -104,16 +114,17 @@
       <h2>URL Shortener</h2>
       <input
         id="urlInput"
-        type="text"
+        type="url"
         placeholder="Masukkan URL lengkap (https://...)"
+        required
       />
       <button onclick="generate()">Generate</button>
-      <div id="result" class="result" style="display: none"></div>
+      <div id="result" class="result"></div>
     </div>
 
     <script>
       async function generate() {
-        const url = document.getElementById("urlInput").value;
+        const url = document.getElementById("urlInput").value.trim();
         const resultBox = document.getElementById("result");
 
         if (!url) {
@@ -122,18 +133,30 @@
           return;
         }
 
-        const response = await fetch("/shorten", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ originalUrl: url }),
-        });
+        try {
+          const response = await fetch("/shorten", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ originalUrl: url }),
+          });
 
-        const data = await response.json();
-        resultBox.style.display = "block";
-        resultBox.innerHTML = `
-        ✅ Short URL:<br>
-        <a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a>
-      `;
+          const data = await response.json();
+
+          if (data.shortUrl) {
+            resultBox.style.display = "block";
+            resultBox.innerHTML = `
+            ✅ Short URL:<br>
+            <a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a>
+          `;
+          } else {
+            resultBox.style.display = "block";
+            resultBox.innerHTML = data.message || "❌ Error generating URL";
+          }
+        } catch (err) {
+          resultBox.style.display = "block";
+          resultBox.innerHTML = "❌ Server error. Please try again.";
+          console.error("Generate URL error:", err);
+        }
       }
     </script>
   </body>
