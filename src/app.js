@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.set("view engine", "ejs");
 app.set("views", path.join(path.resolve(), "views"));
-app.use(favicon(path.join(path.resolve(), "public", "favicon.ico")));
+// app.use(favicon(path.join(path.resolve(), "public", "favicon.ico")));
 app.use(express.static(path.join(path.resolve(), "public")));
 
 // Routes
