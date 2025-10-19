@@ -1,28 +1,24 @@
-const express = require("express");
-const path = require("path");
-const favicon = require("serve-favicon");
-require("dotenv").config();
-const urlRoutes = require("./routes/urlRoutes");
-const serverless = require("serverless-http");
+import express from "express";
+import path from "path";
+import favicon from "serve-favicon";
+import serverless from "serverless-http";
+import urlRoutes from "./routes/urlRoutes.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
+
 app.use(express.json());
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-
-// Middleware favicon
-app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
-
-// Routes
+app.set("views", path.join(path.resolve(), "views"));
+app.use(favicon(path.join(path.resolve(), "public", "favicon.ico")));
 app.use("/", urlRoutes);
 
 app.get("/", (req, res) => {
   res.render("index");
 });
 
-// ❌ Hapus app.listen() untuk Vercel
-// const PORT = process.env.PORT;
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-// ✅ Export handler untuk serverless
-module.exports.handler = serverless(app);
+// ❌ Jangan pakai app.listen()
+// ✅ Export default handler untuk Vercel
+export default serverless(app);
