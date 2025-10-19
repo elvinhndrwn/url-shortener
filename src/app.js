@@ -16,7 +16,7 @@ app.set("views", path.resolve("views"));
 app.set("view engine", "ejs");
 
 // Public static & favicon
-app.use(favicon(path.resolve("public", "favicon.ico")));
+// app.use(favicon(path.resolve("public", "favicon.ico")));
 app.use(express.static(path.resolve("public")));
 
 // Routes
