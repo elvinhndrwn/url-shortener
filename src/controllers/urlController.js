@@ -1,13 +1,15 @@
 import { nanoid } from "nanoid";
 import { saveUrl, findUrl } from "../models/urlModel.js";
 
-// Shorten URL
 export const shortenUrl = async (req, res) => {
   try {
+    console.log("Request body:", req.body);
+
     if (!req.body.originalUrl)
       return res.status(400).json({ message: "URL is required" });
 
     const shortCode = nanoid(6);
+
     await saveUrl(shortCode, req.body.originalUrl);
 
     res.json({
@@ -20,7 +22,6 @@ export const shortenUrl = async (req, res) => {
   }
 };
 
-// Redirect URL
 export const redirectUrl = async (req, res) => {
   try {
     const { shortCode } = req.params;
