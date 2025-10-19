@@ -1,34 +1,26 @@
-const express = require("express");
-const path = require("path");
-const favicon = require("serve-favicon");
-const serverless = require("serverless-http"); // serverless handler
-require("dotenv").config();
+import express from "express";
+import path from "path";
+import favicon from "serve-favicon";
+import dotenv from "dotenv";
+import serverless from "serverless-http";
+import urlRoutes from "./routes/urlRoutes.js";
 
-const urlRoutes = require("./routes/urlRoutes");
+dotenv.config();
 
 const app = express();
 
-// Middleware untuk JSON
+// Middleware
 app.use(express.json());
-
-// EJS view engine
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-
-// Favicon
-app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
-
-// Static folder jika ada file CSS / JS / gambar
-app.use(express.static(path.join(__dirname, "public")));
+app.set("views", path.join(path.resolve(), "views"));
+app.use(favicon(path.join(path.resolve(), "public", "favicon.ico")));
+app.use(express.static(path.join(path.resolve(), "public")));
 
 // Routes
 app.use("/", urlRoutes);
 
-// Halaman landing
 app.get("/", (req, res) => {
   res.render("index");
 });
 
-// ❌ Jangan pakai app.listen() karena Vercel serverless
-// ✅ Export handler untuk serverless
-module.exports = serverless(app);
+export default serverless(app);
